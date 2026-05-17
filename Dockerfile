@@ -18,10 +18,19 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o smarttransit .
 # Run stage
 FROM alpine:latest
 
+# Create non-root user (required by Choreo)
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
 WORKDIR /app
 
 # Copy binary from builder
 COPY --from=builder /app/smarttransit .
+
+# Set ownership
+RUN chown -R appuser:appgroup /app
+
+# Switch to non-root user
+USER 10014
 
 # Expose port
 EXPOSE 8080
