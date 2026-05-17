@@ -1,0 +1,101 @@
+openapi: 3.0.3
+info:
+  title: SmartTransit API
+  description: Backend API for SmartTransit bus management system
+  version: 1.0.0
+servers:
+  - url: /api
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: API is running
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+  /auth/login:
+    post:
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+  /buses:
+    get:
+      summary: Get all buses
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of buses
+    post:
+      summary: Create a bus
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Bus created
+  /routes:
+    get:
+      summary: Get all routes
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of routes
+    post:
+      summary: Create a route
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Route created
+  /bookings:
+    get:
+      summary: Get all bookings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of bookings
+    post:
+      summary: Create a booking
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Booking created
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

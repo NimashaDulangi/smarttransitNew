@@ -1,0 +1,8 @@
+schemaVersion: 1.2
+endpoint:
+  - name: SmartTransit API
+    port: 8080
+    type: REST
+    networkVisibility: Public
+    context: /
+    schemaFilePath: openapi.yaml
