@@ -58,3 +58,35 @@ func (h *BusHandler) CreateBus(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, models.APIResponse{Success: true, Message: "Bus created successfully"})
 }
+
+// PUT /buses/:id
+func (h *BusHandler) UpdateBus(c *gin.Context) {
+	id := c.Param("id")
+	var req models.CreateBusRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, models.APIResponse{Success: false, Message: err.Error()})
+		return
+	}
+
+	_, err := h.DB.Exec(`UPDATE buses SET bus_number=$1, capacity=$2, updated_at=NOW() WHERE id=$3`,
+		req.BusNumber, req.Capacity, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.APIResponse{Success: false, Message: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "Bus updated successfully"})
+}
+
+// DELETE /buses/:id
+func (h *BusHandler) DeleteBus(c *gin.Context) {
+	id := c.Param("id")
+
+	_, err := h.DB.Exec(`DELETE FROM buses WHERE id=$1`, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.APIResponse{Success: false, Message: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "Bus deleted successfully"})
+}

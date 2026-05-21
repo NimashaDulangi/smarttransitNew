@@ -17,10 +17,8 @@ import (
 func main() {
 	fmt.Println("🚌 SmartTransit is starting...")
 
-	// Load config
 	cfg := config.LoadConfig()
 
-	// Connect to database
 	db := utils.ConnectDatabase(
 		cfg.DatabaseURL,
 		cfg.DatabaseMaxConnections,
@@ -29,10 +27,8 @@ func main() {
 	)
 	defer db.Close()
 
-	// Setup Gin router
 	router := gin.Default()
 
-	// CORS middleware
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -40,13 +36,11 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	// Initialize handlers
 	authHandler := middleware.NewAuthHandler(db, cfg)
 	busHandler := buses.NewBusHandler(db)
 	routeHandler := routes.NewRouteHandler(db)
 	bookingHandler := booking.NewBookingHandler(db)
 
-	// Public routes (no auth needed)
 	api := router.Group("/api")
 	{
 		auth := api.Group("/auth")
@@ -56,24 +50,28 @@ func main() {
 		}
 	}
 
-	// Protected routes (auth required)
 	protected := router.Group("/api")
 	protected.Use(middleware.AuthMiddleware(cfg))
 	{
-		// Bus routes
+		// Bus CRUD
 		protected.GET("/buses", busHandler.GetAllBuses)
 		protected.POST("/buses", busHandler.CreateBus)
+		protected.PUT("/buses/:id", busHandler.UpdateBus)
+		protected.DELETE("/buses/:id", busHandler.DeleteBus)
 
-		// Route routes
+		// Route CRUD
 		protected.GET("/routes", routeHandler.GetAllRoutes)
 		protected.POST("/routes", routeHandler.CreateRoute)
+		protected.PUT("/routes/:id", routeHandler.UpdateRoute)
+		protected.DELETE("/routes/:id", routeHandler.DeleteRoute)
 
-		// Booking routes
+		// Booking CRUD
 		protected.GET("/bookings", bookingHandler.GetAllBookings)
 		protected.POST("/bookings", bookingHandler.CreateBooking)
+		protected.PUT("/bookings/:id", bookingHandler.UpdateBooking)
+		protected.DELETE("/bookings/:id", bookingHandler.DeleteBooking)
 	}
 
-	// Health check
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok", "message": "SmartTransit API is running!"})
 	})

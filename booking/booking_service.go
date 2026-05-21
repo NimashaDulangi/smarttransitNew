@@ -58,3 +58,35 @@ func (h *BookingHandler) CreateBooking(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, models.APIResponse{Success: true, Message: "Booking created successfully"})
 }
+
+// PUT /bookings/:id
+func (h *BookingHandler) UpdateBooking(c *gin.Context) {
+	id := c.Param("id")
+	var req models.CreateBookingRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, models.APIResponse{Success: false, Message: err.Error()})
+		return
+	}
+
+	_, err := h.DB.Exec(`UPDATE bookings SET bus_id=$1, route_id=$2, passenger_name=$3, passenger_phone=$4, seat_number=$5, updated_at=NOW() WHERE id=$6`,
+		req.BusID, req.RouteID, req.PassengerName, req.PassengerPhone, req.SeatNumber, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.APIResponse{Success: false, Message: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "Booking updated successfully"})
+}
+
+// DELETE /bookings/:id
+func (h *BookingHandler) DeleteBooking(c *gin.Context) {
+	id := c.Param("id")
+
+	_, err := h.DB.Exec(`DELETE FROM bookings WHERE id=$1`, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.APIResponse{Success: false, Message: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "Booking deleted successfully"})
+}
