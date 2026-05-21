@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:8080';
+  static const String baseUrl = 'https://061e983a-9cef-491e-bc38-b36f6a8f14df-dev.e1-us-east-azure.choreoapis.dev/smarttransit1/smarttransit-api-new/v1.0';
 
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
