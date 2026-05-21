@@ -1,1 +1,7 @@
 schemaVersion: 1.2
+endpoints:
+  - name: SmartTransit API
+    port: 8080
+    type: REST
+    networkVisibility: Public
+    context: /
