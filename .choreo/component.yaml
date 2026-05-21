@@ -1,7 +1,8 @@
 schemaVersion: 1.2
 endpoints:
   - name: smarttransit-api
-    port: 8080
+    service:
+      port: 8080
     type: REST
     networkVisibility: Public
     context: /
